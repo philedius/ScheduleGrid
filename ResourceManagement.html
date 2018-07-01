@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Resource Management</title>
+    <link rel="stylesheet" href="jquery-ui-1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="grid">
+            <div class="row" id="days"></div>
+            <div class="events">
+                <div class="event" data-x="9" data-y="4" data-span="7"><div class="event-text">Meeting with Masters Of The Universe</div></div>
+                <div class="event" data-x="10" data-y="1" data-span="10"><div class="event-text">Meeting with Business person about business stuff</div></div>
+                <div class="event" data-x="1" data-y="2" data-span="8"><div class="event-text">Dance-off with Big Mike</div></div>
+                <div class="event" data-x="2" data-y="5" data-span="3"><div class="event-text">Pet dog</div></div>
+                <div class="event" data-x="20" data-y="12" data-span="4"><div class="event-text">Eat spaghetti</div></div>
+                <div class="event" data-x="13" data-y="10" data-span="6"><div class="event-text">Some other task</div></div>
+                <div class="event" data-x="8" data-y="8" data-span="2"><div class="event-text">Nap</div></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
+<script>
+    var numDaysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    var colors = ['rgb(79, 146, 221)', 'rgb(201, 59, 24)', 'rgb(230, 190, 0)'];
+    var cellX = 42;
+    var cellY = 32;
+    var gridHeight = 700;
+    gridHeight = (gridHeight + (gridHeight % cellY));
+    var scrollbarWidth = 17;
+    var eventMargin = 0;
+    var eventHeight = cellY - eventMargin;
+    var numRows = 110;
+    var numColumns = numDaysInMonth[new Date().getMonth()];
+    var startTime = performance.now();
+    var gridHTML = '';
+    for(var i = 0; i < numRows; i++) {
+        gridHTML += '<div class="row" data-row="' + (i + 1) + '">';
+        for (var j = 0; j < numColumns; j++) {
+            gridHTML += '<div class="cell" data-x="' + j + '" data-y="' + (i + 1) + '"></div>';
+        }
+        gridHTML += '</div>';
+    }
+
+    $('#grid').append(gridHTML);
+
+    var daysHTML = '';
+        for(var i = 0; i < numColumns; i++) {
+            var day = i + 1;
+            daysHTML += '<div class="cell workday">' + day + '</div>';
+            
+        }
+
+        $('#days').append(daysHTML);
+
+    $(document).ready(function() {
+
+        setDimensions();
+
+        $('.event').resizable({
+            grid: [cellX, cellY],
+            handles: 'e',
+            stop: function(event, ui) {
+                var spaces = (ui.size.width - ui.originalSize.width) / cellX;
+                ui.element.attr('data-span', parseInt(ui.element.attr('data-span')) + spaces);
+                
+            }
+        });
+
+        $('.event').draggable({
+            grid: [cellX, cellY],
+            stop: function(event, ui) {
+                var posTop = parseInt($(event.target).css('top').replace('px', ''));
+                var posLeft = parseInt($(event.target).css('left').replace('px', ''));
+                var newPosTop = posTop / cellY;
+                var newPosLeft = posLeft / cellX;
+                $(event.target).attr('data-y', newPosTop);
+                $(event.target).attr('data-x', newPosLeft);
+            }
+        });
+
+        $('.event').each(function() {
+            var startingY = $(this).data('y');
+            var startingX = $(this).data('x');
+            var span = $(this).data('span');
+            $(this).css({
+                'top': (startingY * cellY) + 'px',
+                'left': (startingX * cellX) + 'px',
+                'width': (span * cellX) + 'px',
+                'background': colors[Math.floor(Math.random() * colors.length)]
+            });
+        });
+
+        $('.cell').on('dblclick', function() {
+            var x = $(this).data('x');
+            var y = $(this).data('y');
+            var span = 3;
+            $('.events').append('<div class="event" data-x="' + x + '" data-y="' + y + '" data-span="' + span + '"><div class="event-text">New task!!</div></div>');
+            $('.event:last').css({
+                'margin-top': eventMargin / 2,
+                'min-width': cellX,
+                'height': eventHeight,
+                'min-height': eventHeight,
+                'max-height': eventHeight,
+                'top': (y * cellY) + 'px',
+                'left': (x * cellX) + 'px',
+                'width': (span * cellX) + 'px',
+                'height': cellY
+            });
+
+            $('.event:last').resizable({
+            grid: [cellX, cellY],
+            handles: 'e',
+            stop: function(event, ui) {
+                var spaces = (ui.size.width - ui.originalSize.width) / cellX;
+                ui.element.attr('data-span', parseInt(ui.element.attr('data-span')) + spaces);
+                console.log(ui.element.attr('data-span'));
+                
+            }
+        });
+
+        $('.event:last').draggable({
+            grid: [cellX, cellY],
+            stop: function(event, ui) {
+                var posTop = parseInt($(event.target).css('top').replace('px', ''));
+                var posLeft = parseInt($(event.target).css('left').replace('px', ''));
+                var newPosTop = posTop / cellY;
+                var newPosLeft = posLeft / cellX;
+                console.log(newPosTop, newPosLeft);
+                $(event.target).attr('data-y', newPosTop);
+                $(event.target).attr('data-x', newPosLeft);
+            }
+        });
+            console.log('YO, YOU DOUBLE CLICKED ON', $(this).data('y'), $(this).data('x'));
+        })
+
+        $('#grid').scroll(function() {
+
+            $('#days').css({
+                'top': $(this).scrollTop()
+            });
+            
+            $('.events').css({
+                'top': -$(this).scrollTop() + $('#grid').position().top,
+                'left': -$(this).scrollLeft() + $('#grid').position().left
+            });
+        });
+
+        $('.container').css('opacity', 1);
+    });
+
+    
+    function setDimensions() {
+        $('.cell').css({
+            'min-width': cellX + 'px',
+            'height': cellY + 'px',
+            'min-height': cellY + 'px',
+            'max-height': cellY + 'px',
+        });
+
+        $('.event').css({
+            'margin-top': eventMargin / 2,
+            'min-width': cellX,
+            'height': eventHeight,
+            'min-height': eventHeight,
+            'max-height': eventHeight,
+        });
+
+        $('.row').css('height', cellY);
+        $('.row').css('width', cellX * (numColumns));
+
+        // $('#grid').css('width', (cellX * (numColumns + 1)) + scrollbarWidth);
+        $('#grid').css('height', gridHeight);
+
+        $('.events').css('top', $('#grid').position().top);
+    }
+
+</script>
+
+</html>
