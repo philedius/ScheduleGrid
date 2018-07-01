@@ -11,7 +11,6 @@
 <body>
     <div class="container">
         <div id="grid">
-            <div class="row" id="days"></div>
             <div class="events">
                 <div class="event" data-x="9" data-y="4" data-span="7"><div class="event-text">Meeting with Masters Of The Universe</div></div>
                 <div class="event" data-x="10" data-y="1" data-span="10"><div class="event-text">Meeting with Business person about business stuff</div></div>
@@ -19,8 +18,11 @@
                 <div class="event" data-x="2" data-y="5" data-span="3"><div class="event-text">Pet dog</div></div>
                 <div class="event" data-x="20" data-y="12" data-span="4"><div class="event-text">Eat spaghetti</div></div>
                 <div class="event" data-x="13" data-y="10" data-span="6"><div class="event-text">Some other task</div></div>
-                <div class="event" data-x="8" data-y="8" data-span="2"><div class="event-text">Nap</div></div>
+                <div class="event" data-x="6" data-y="15" data-span="3"><div class="event-text">Nap</div></div>
+                <div class="event" data-x="1" data-y="8" data-span="6"><div class="event-text">Second breakfast</div></div>
             </div>
+            <div class="row timeline-row" id="months"></div>
+            <div class="row timeline-row" id="days"></div>
         </div>
     </div>
 </body>
@@ -28,23 +30,35 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
 <script>
+    /* TODO:
+
+        * Some major refactoring.
+        * Make into a jQuery plugin?
+            - How do?
+        * Edit events
+        * Form for new events
+        * Timeline logic
+    
+    */
+
     var numDaysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    var colors = ['rgb(79, 146, 221)', 'rgb(201, 59, 24)', 'rgb(230, 190, 0)'];
+    var colors = ['rgb(79, 146, 221)', 'rgb(201, 59, 24)', 'rgb(230, 190, 0)', 'rgb(25, 170, 72)'];
     var cellX = 42;
     var cellY = 32;
     var gridHeight = 700;
     gridHeight = (gridHeight + (gridHeight % cellY));
+    var numTimelineRows = $('.timeline-row').length;
     var scrollbarWidth = 17;
-    var eventMargin = 0;
+    var eventMargin = 6;
     var eventHeight = cellY - eventMargin;
-    var numRows = 110;
-    var numColumns = numDaysInMonth[new Date().getMonth()];
+    var numRows = 20;
+    var numColumns = numDaysInMonth[new Date().getMonth()] * 12;
     var startTime = performance.now();
     var gridHTML = '';
     for(var i = 0; i < numRows; i++) {
-        gridHTML += '<div class="row" data-row="' + (i + 1) + '">';
+        gridHTML += '<div class="row" data-row="' + i + '">';
         for (var j = 0; j < numColumns; j++) {
-            gridHTML += '<div class="cell" data-x="' + j + '" data-y="' + (i + 1) + '"></div>';
+            gridHTML += '<div class="cell" data-x="' + j + '" data-y="' + i + '"></div>';
         }
         gridHTML += '</div>';
     }
@@ -73,7 +87,9 @@
                 
             }
         });
+        
 
+        // 
         $('.event').draggable({
             grid: [cellX, cellY],
             stop: function(event, ui) {
@@ -82,12 +98,14 @@
                 var newPosTop = posTop / cellY;
                 var newPosLeft = posLeft / cellX;
                 $(event.target).attr('data-y', newPosTop);
+                // $(event.target).attr('data-y', newPosTop - numTimelineRows);
                 $(event.target).attr('data-x', newPosLeft);
             }
         });
 
         $('.event').each(function() {
             var startingY = $(this).data('y');
+            // var startingY = $(this).data('y') + numTimelineRows;
             var startingX = $(this).data('x');
             var span = $(this).data('span');
             $(this).css({
@@ -109,10 +127,12 @@
                 'height': eventHeight,
                 'min-height': eventHeight,
                 'max-height': eventHeight,
+                // 'top': ((y + numTimelineRows) * cellY) + 'px',
                 'top': (y * cellY) + 'px',
                 'left': (x * cellX) + 'px',
                 'width': (span * cellX) + 'px',
-                'height': cellY
+                'height': cellY,
+                'background': colors[Math.floor(Math.random() * colors.length)]
             });
 
             $('.event:last').resizable({
@@ -135,21 +155,17 @@
                 var newPosLeft = posLeft / cellX;
                 console.log(newPosTop, newPosLeft);
                 $(event.target).attr('data-y', newPosTop);
+                // $(event.target).attr('data-y', newPosTop - numTimelineRows);
                 $(event.target).attr('data-x', newPosLeft);
             }
         });
             console.log('YO, YOU DOUBLE CLICKED ON', $(this).data('y'), $(this).data('x'));
-        })
+        });
 
         $('#grid').scroll(function() {
 
             $('#days').css({
                 'top': $(this).scrollTop()
-            });
-            
-            $('.events').css({
-                'top': -$(this).scrollTop() + $('#grid').position().top,
-                'left': -$(this).scrollLeft() + $('#grid').position().left
             });
         });
 
@@ -177,9 +193,11 @@
         $('.row').css('width', cellX * (numColumns));
 
         // $('#grid').css('width', (cellX * (numColumns + 1)) + scrollbarWidth);
-        $('#grid').css('height', gridHeight);
+        // $('#grid').css('height', gridHeight);
 
-        $('.events').css('top', $('#grid').position().top);
+        $('.events').css('top', numTimelineRows * cellY);
+        $('.events').css('left', 0);
+        // $('.events').css('top', $('#grid').position().top);
     }
 
 </script>
