@@ -1,9 +1,10 @@
 (function ($) {
 
-    $.fn.ScheduleGrid = function (options) {
+    var resourceCellWidth = 180;
 
+    $.fn.ScheduleGrid = function (options) {
+        $grid = this;
         var settings = $.extend({
-            selector: '#grid',
             cellX: 42,
             cellY: 32,
             gridHeight: 700,
@@ -40,7 +41,7 @@
             }
             gridHTML += '</div>';
         }
-        $(settings.selector).append(gridHTML);
+        $($grid).append(gridHTML);
 
         var daysHTML = '';
         for (var i = 0; i < settings.numColumns; i++) {
@@ -72,6 +73,7 @@
         });
 
         $('.cell').on('dblclick', function () {
+            if ($(this).hasClass('resource-cell')) return;
             var x = $(this).data('x');
             var y = $(this).data('y');
             var span = 3;
@@ -99,70 +101,53 @@
             
             if (settings.resizable) makeResizable(settings, $('.event:last'));
             if (settings.draggable) makeDraggable(settings, $('.event:last'));
-    
-            
         });
 
-        $(settings.selector).scroll(function () {
+        $($grid).scroll(function () {
         $('.timeline-row').css({
             'top': $(this).scrollTop()
         });
     });
 
-    $(settings.selector).css('opacity', 1);
-
+    $($grid).css('opacity', 1);
         return this;
     }
 
     function makeResizable(settings, element) {
-        if (element) {
-            element.resizable({
-                grid: [settings.cellX, settings.cellY],
-                handles: 'e',
-                stop: function (event, ui) {
-                    var spaces = (ui.size.width - ui.originalSize.width) / settings.cellX;
-                    ui.element.attr('data-span', parseInt(ui.element.attr('data-span')) + spaces);
-                }
-            });
-        } else {
-            $('.event').resizable({
-                grid: [settings.cellX, settings.cellY],
-                handles: 'e',
-                stop: function (event, ui) {
-                    var spaces = (ui.size.width - ui.originalSize.width) / settings.cellX;
-                    ui.element.attr('data-span', parseInt(ui.element.attr('data-span')) + spaces);
-                }
-            });
-        }
+        if (!element) element = $('.event');
+        element.resizable({
+            grid: [settings.cellX, settings.cellY],
+            handles: 'e',
+            stop: function (event, ui) {
+                var spaces = (ui.size.width - ui.originalSize.width) / settings.cellX;
+                ui.element.attr('data-span', parseInt(ui.element.attr('data-span')) + spaces);
+            }
+        });
+        
     }
 
     function makeDraggable(settings, element) {
-        if (element) {
-            element.draggable({
-                grid: [settings.cellX, settings.cellY],
-                stop: function (event, ui) {
-                    var posTop = parseInt($(event.target).css('top').replace('px', ''));
-                    var posLeft = parseInt($(event.target).css('left').replace('px', ''));
-                    var newPosTop = posTop / settings.cellY;
-                    var newPosLeft = posLeft / settings.cellX;
-                    $(event.target).attr('data-y', newPosTop);
-                    $(event.target).attr('data-x', newPosLeft);
-                }
-            });
-        } else {
-            $('.event').draggable({
-                grid: [settings.cellX, settings.cellY],
-                stop: function (event, ui) {
-                    var posTop = parseInt($(event.target).css('top').replace('px', ''));
-                    var posLeft = parseInt($(event.target).css('left').replace('px', ''));
-                    var newY = posTop / settings.cellY;
-                    var newX = posLeft / settings.cellX;
-                    $(event.target).attr('data-y', newY);
-                    $(event.target).attr('data-x', newX);
-                    $(event.target).find('.event-text').text($('.row[data-row="' + newY + '"] .resource-cell').text() + ' ' + (newX + 1) + '. - ' + (newX + 1 + $(event.target).data('span') - 1) + '. Juli');
-                }
-            });
-        }
+        if (!element) element = $('.event');
+        var x1 = $grid.offset().left + resourceCellWidth;
+        var y1 = $grid.offset().top + (settings.cellX / 2);
+        var x2 = $grid.offset().left + $grid.width();
+        var y2 = $grid.offset().top + $grid.height();
+        var boundingBox = [x1, y1, x2, y2];
+        console.log(boundingBox);
+        element.draggable({
+            grid: [settings.cellX, settings.cellY],
+            containment: boundingBox,
+            stop: function (event, ui) {
+                var posTop = parseInt($(event.target).css('top').replace('px', ''));
+                var posLeft = parseInt($(event.target).css('left').replace('px', ''));
+                var newY = posTop / settings.cellY;
+                var newX = posLeft / settings.cellX;
+                $(event.target).attr('data-y', newY);
+                $(event.target).attr('data-x', newX);
+                $(event.target).find('.event-text').text($('.row[data-row="' + newY + '"] .resource-cell').text() + ' ' + (newX + 1) + '. - ' + (newX + 1 + $(event.target).data('span') - 1) + '. Juli');
+            }
+        });
+        
     }
 
     function setDimensions(settings) {
@@ -192,12 +177,11 @@
     
         });
     
-        $('.resource-cell').css('width', '180px');
-    
+        $('.resource-cell').css('width', resourceCellWidth);
         $('.row').css('height', settings.cellY);
-    
-        $(settings.selector).css('height', settings.gridHeight);
-    
+        $grid.css('height', settings.gridHeight);
+        
+        $('.events').css('width', $('.events').width() - resourceCellWidth);
         $('.events').css('top', settings.numTimelineRows * settings.cellY);
         $('.events').css('left', $('.resource-cell').width());
     }
@@ -207,11 +191,11 @@
     }
 
     function IEScrollFix(settings) {
-        $(settings.selector).on('mousewheel', function (e) {
+        $($grid).on('mousewheel', function (e) {
             e.preventDefault();
             var wheelDelta = e.originalEvent.wheelDelta;
-            var currentScrollPosition = $(settings.selector).scrollTop();
-            $(settings.selector).scrollTop(currentScrollPosition - wheelDelta);
+            var currentScrollPosition = $($grid).scrollTop();
+            $($grid).scrollTop(currentScrollPosition - wheelDelta);
         });
     }
 
