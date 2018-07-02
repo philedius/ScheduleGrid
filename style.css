@@ -11,7 +11,6 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 11px;
-    opacity: 0;
     transition: opacity .15s ease;
     overflow: hidden;
 }
@@ -19,6 +18,7 @@ body {
 #grid {
     border: 1px solid #ddd;
     overflow-y: scroll;
+    opacity: 0;
 }
 
 .row {

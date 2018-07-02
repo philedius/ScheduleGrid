@@ -48,6 +48,21 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
-<script src="ResourceManagement.js"></script>
+<script src="jquery.ScheduleGrid.js"></script>
+<script>
+    /* TODO:
 
+            * Some major refactoring.
+            * Make into a jQuery plugin?
+                - How do?
+            * Edit events
+            * Form for new events
+            * Timeline logic
+        
+        */
+
+    $(document).ready(function () {
+        $('.container').ScheduleGrid();
+    });
+</script>
 </html>
