@@ -195,12 +195,15 @@
 
     
     function setDimensions() {
+
         $('.cell').css({
             'min-width': cellX + 'px',
             'height': cellY + 'px',
             'min-height': cellY + 'px',
             'max-height': cellY + 'px',
         });
+
+        $('#months > .cell').css('min-width', cellX * numColumns)
 
         $('.event').css({
             // 'margin-top': eventMargin / 2,

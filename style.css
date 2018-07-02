@@ -50,7 +50,7 @@ body {
     position: absolute;
     display:flex;
     align-items: center;
-    
+    justify-content: center;
     border-radius: 1px;
     overflow: hidden;
     user-select: none;
@@ -69,12 +69,14 @@ body {
     color: white;
     background: rgb(79, 146, 221);
     width: 100%;
+    cursor: default;
+    user-select: none;
 }
 
 .timeline-row {
     display: flex;
     position: relative;
-    top: 0;
+    /* top: 81px; */
     flex-direction: row;
     background: #f0f2f3 !important;
     border-bottom: 1px solid #d5dbe0;
@@ -84,10 +86,24 @@ body {
     color: #888;
 }
 
-#days .cell {
+.timeline-row .cell {
     display: flex;
     align-items: center;
     justify-content: center;
     border-right: 1px solid #d5dbe0;
     color: #8b9196;
+}
+
+.ui-resizable-e {
+    width: 14px;
+}
+
+.resource-cell {
+    display: flex;
+    align-items: center;
+}
+
+.resource-name {
+    color: hsl(207, 12%, 40%);
+    margin-left: 1rem;
 }
