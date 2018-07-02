@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Resource Management</title>
     <link rel="stylesheet" href="jquery-ui-1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -44,10 +45,19 @@
             </div>
         </div>
     </div>
+    <div style="display: none;" id="modal">
+        <h2>Hello there, handsome</h2>
+        <p>This is a test modal, so I'm putting a bunch of text here as filler to see how it looks when it's got something in it, aight?</p>
+        <input type="text" id="modal-text" placeholder="text" />
+        <input type="text" id="modal-span" placeholder="span" />
+        <input type="text" id="modal-color" placeholder="color" />
+        <a href="#" rel="modal:close"><button id="modal-button" >yes</button></a>
+    </div>
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
 <script src="jquery.ScheduleGrid.js"></script>
 <script>
     /* TODO:
