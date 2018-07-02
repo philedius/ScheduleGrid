@@ -81,16 +81,16 @@
     $('#days').append(daysHTML);
 
 
-    // for (var i = 0; i < 50; i++) {
-    //     var color = 'yellow';
-    //     var guards = Math.ceil(Math.random() * 4);
-    //     var guardsNeeded = Math.ceil(Math.random() * 4);
-    //     if (guards > guardsNeeded) guardsNeeded = guards;
-    //     if (guards === guardsNeeded) color = 'green';
-    //     if (guards < guardsNeeded) color = 'yellow';
-    //     if (color === 'green' && Math.random() > .7) color = 'orange';
-    //     $('.events').append('<div class="event" data-color="'+color+'" data-x="'+(i % 25)+'" data-y="'+Math.ceil(i/25)+'" data-span="1"><div class="event-text">'+guards+'('+guardsNeeded+')</div></div>');
-    // }
+    for (var i = 0; i < 50; i++) {
+        var color = 'yellow';
+        var guards = Math.ceil(Math.random() * 4);
+        var guardsNeeded = Math.ceil(Math.random() * 4);
+        if (guards > guardsNeeded) guardsNeeded = guards;
+        if (guards === guardsNeeded) color = 'green';
+        if (guards < guardsNeeded) color = 'yellow';
+        if (color === 'green' && Math.random() > .7) color = 'orange';
+        $('.events').append('<div class="event" data-color="'+color+'" data-x="'+(i % 25)+'" data-y="'+Math.ceil(i/25)+'" data-span="1"><div class="event-text">'+guards+'('+guardsNeeded+')</div></div>');
+    }
 
     $(document).ready(function() {
 
