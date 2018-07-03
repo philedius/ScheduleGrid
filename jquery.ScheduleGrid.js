@@ -5,10 +5,10 @@
     $.fn.ScheduleGrid = function (options) {
         $grid = this;
         var settings = $.extend({
-            cellX: 48,
-            cellY: 36,
+            cellX: 32,
+            cellY: 32,
             gridHeight: 700,
-            eventMargin: 12,
+            eventMargin: 10,
             resizable: true,
             draggable: true
         }, options);
@@ -54,7 +54,7 @@
         if (isIE()) IEScrollFix(settings);
         setDimensions(settings);
         
-        
+        // $('#modal-form').modal();
         $('.event').each(function () {
             var startingY = $(this).data('y');
             var startingX = $(this).data('x');
@@ -72,50 +72,24 @@
             if (settings.draggable) makeDraggable(settings, $(this));
         });
 
+        
         $('.cell').on('dblclick', function () {
-            $('#modal-text').val('');
-            $('#modal-span').val('');
-            $('#modal-color').val('');
             if ($(this).hasClass('resource-cell')) return;
-            $('#modal').modal();
             var x = $(this).data('x');
             var y = $(this).data('y');
-            $('.events').append('<div class="event" data-x="' + x + '" data-y="' + y + '" data-span="1"><div class="event-text">New task!!</div></div>');
-            
-            $('#modal-button').on('click', function() {
-                var newEvent = $('.event:last');
-                newEvent.find('.event-text').text($('#modal-text').val());
-                newEvent.attr('data-span', $('#modal-span').val());
-                newEvent.attr('data-color', $('#modal-color').val());
-                $('.event:last').css({
-                    'width': (parseInt(newEvent.attr('data-span')) * settings.cellX) + 'px',
-                    'min-width': settings.cellX,
-                    'height': settings.cellY,
-                    'min-height': settings.cellY,
-                    'max-height': settings.cellY,
-                    'top': (y * settings.cellY) + 'px',
-                    'left': (x * settings.cellX) + 'px',
-                });
-                
-                $('.event:last .event-text').css({
-                    'margin-left': settings.eventMargin / 2,
-                    'margin-right': settings.eventMargin / 2,
-                    'min-width': settings.eventWidth,
-                    'height': settings.eventHeight,
-                    'min-height': settings.eventHeight,
-                    'max-height': settings.eventHeight,
-                    'background': colors[newEvent.attr('data-color')]
-                });
-            });
-
-            if (settings.resizable) makeResizable(settings, $('.event:last'));
-            if (settings.draggable) makeDraggable(settings, $('.event:last'));
+            console.log('Double clicked', y, x);
         });
 
         $($grid).scroll(function () {
             $('.timeline-row').css({
                 'top': $(this).scrollTop()
             });
+
+            if ($(this).scrollTop() > 0) {
+                $('.timeline-row').css('box-shadow', '0 1px 5px rgba(0, 0, 0, .06)');
+            } else {
+                $('.timeline-row').css('box-shadow', 'none');
+            }
         });
 
         $($grid).css('opacity', 1);
@@ -136,7 +110,6 @@
                 makeDraggable(settings, element);
             }
         });
-        
     }
 
     function makeDraggable(settings, element) {
@@ -146,7 +119,6 @@
         var x2 = $grid.offset().left + ((settings.numColumns * settings.cellX) + resourceCellWidth) - element.width();
         var y2 = $grid.offset().top + ($('.row').length * settings.cellY);
         var boundingBox = [x1, y1, x2, y2];
-        console.log(boundingBox);
         element.draggable({
             stacks: '.event',
             grid: [settings.cellX, settings.cellY],
