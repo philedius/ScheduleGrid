@@ -40,48 +40,37 @@
                     <div class="event-text">Second breakfast</div>
                 </div>
             </div>
+            <div class="row timeline-row" id="months">
+                <div class="cell resource-cell"></div>
+            </div>
             <div class="row timeline-row" id="days">
-                <div class="cell resource-cell">Juli 2018</div>
+                <div class="cell resource-cell"></div>
             </div>
         </div>
-    </div>
-    <div style="display: none;" id="modal">
-        <h2>Hello there, handsome</h2>
-        <p>This is a test modal, so I'm putting a bunch of text here as filler to see how it looks when it's got something in it, aight?</p>
-        <input type="text" id="modal-text" placeholder="text" />
-        <input type="text" id="modal-span" placeholder="span" />
-        <input type="text" id="modal-color" placeholder="color" />
-        <a href="#" rel="modal:close"><button id="modal-button" >yes</button></a>
-    </div>
-
-    <div style="display: none;" id="modal">
-        <h2>Hello there, handsome</h2>
-        <p>This is a test modal, so I'm putting a bunch of text here as filler to see how it looks when it's got something in it, aight?</p>
-        <input type="text" id="modal-text" placeholder="text" />
-        <input type="text" id="modal-span" placeholder="span" />
-        <input type="text" id="modal-color" placeholder="color" />
-        <button id="modal-button" >yes?</button>
     </div>
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+<script src="dayjs.min.js"></script>
 <script src="jquery.ScheduleGrid.js"></script>
 <script>
     /* TODO:
 
-            * Some major refactoring.
-            * Make into a jQuery plugin?
-                - How do?
+            IN PROGESS * Some major refactoring.
+            DONE * Make into a jQuery plugin?
+            DONE     - How do?
             * Edit events
             * Form for new events
             * Timeline logic
         
         */
 
-    $(document).ready(function () {
-        $('#grid').ScheduleGrid();
-    });
+       var perf = performance.now();
+       $('#grid').ScheduleGrid();
+       $('.container').css('opacity', 1);
+       console.log(performance.now() - perf);
+
 </script>
 </html>
