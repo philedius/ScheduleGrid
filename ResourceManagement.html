@@ -15,36 +15,39 @@
     <div class="container">
         <div id="grid">
             <div class="events">
-                <div class="event" data-color="blue" data-x="9" data-y="4" data-span="7">
+                <div class="event" data-x="9" data-y="4" data-span="7">
                     <div class="event-text">Meeting with Masters Of The Universe</div>
                 </div>
-                <div class="event" data-color="green" data-x="10" data-y="1" data-span="10">
+                <div class="event" data-x="10" data-y="1" data-span="10">
                     <div class="event-text">Meeting with Business person about business stuff</div>
                 </div>
-                <div class="event" data-color="blue" data-x="1" data-y="2" data-span="8">
+                <div class="event" data-x="1" data-y="2" data-span="8">
                     <div class="event-text">Dance-off with Big Mike</div>
                 </div>
-                <div class="event" data-color="red" data-x="2" data-y="5" data-span="3">
+                <div class="event" data-x="10" data-y="2" data-span="3">
+                    <div class="event-text">Round 2</div>
+                </div>
+                <div class="event" data-x="2" data-y="5" data-span="3">
                     <div class="event-text">Pet dog</div>
                 </div>
-                <div class="event" data-color="yellow" data-x="20" data-y="12" data-span="4">
+                <div class="event" data-x="20" data-y="12" data-span="4">
                     <div class="event-text">Eat spaghetti</div>
                 </div>
-                <div class="event" data-color="yellow" data-x="13" data-y="10" data-span="6">
+                <div class="event" data-x="13" data-y="10" data-span="6">
                     <div class="event-text">Some other task</div>
                 </div>
-                <div class="event" data-color="yellow" data-x="6" data-y="15" data-span="3">
+                <div class="event" data-x="6" data-y="15" data-span="3">
                     <div class="event-text">Nap</div>
                 </div>
-                <div class="event" data-color="orange" data-x="1" data-y="8" data-span="6">
+                <div class="event" data-x="1" data-y="8" data-span="6">
                     <div class="event-text">Second breakfast</div>
                 </div>
             </div>
             <div class="row timeline-row" id="months">
-                <div class="cell resource-cell"></div>
+                <div class="cell top-left-corner-cell"></div>
             </div>
             <div class="row timeline-row" id="days">
-                <div class="cell resource-cell"></div>
+                <div class="cell top-left-corner-cell"></div>
             </div>
         </div>
     </div>
@@ -54,6 +57,7 @@
 <script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
 <script src="dayjs.min.js"></script>
+<script src="chroma.min.js"></script>
 <script src="jquery.ScheduleGrid.js"></script>
 <script>
     /* TODO:
@@ -66,11 +70,8 @@
             * Timeline logic
         
         */
-
-       var perf = performance.now();
        $('#grid').ScheduleGrid();
        $('.container').css('opacity', 1);
-       console.log(performance.now() - perf);
 
 </script>
 </html>

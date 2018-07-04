@@ -7,10 +7,10 @@ body {
 
 .container {
     display: flex;
-    margin-top: 3.25rem;
-    margin-left: 4rem;
     flex-direction: column;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     font-size: 11px;
     transition: opacity .15s ease;
     overflow: hidden;
@@ -18,8 +18,8 @@ body {
 }
 
 #grid {
-    width: 1800px;
-    height: 630px;
+    width: calc(100vw - 100px);
+    height: calc(100vh - 100px);
     border: 1px solid #d5dbe0;
     border-radius: 3px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
@@ -34,7 +34,8 @@ body {
     background: white;
 }
 
-.row:nth-child(odd) {
+.row:nth-child(odd),
+.row:nth-child(odd) .resource-cell {
     background: #f6f7f8;
 }
 
@@ -68,7 +69,7 @@ body {
     text-shadow: 0 1px 1px rgba(0, 0, 0, .04);
     font-weight: 600;
     background: rgb(79, 146, 221);
-    border-left: 6px solid rgba(0, 0, 0, 0.1);
+    border-left: 6px solid rgba(0, 0, 0, 1);
     width: 100%;
     cursor: default;
     user-select: none;
@@ -94,10 +95,20 @@ body {
     background: #f0f2f4 !important;
     transition: box-shadow .2s ease-out;
     border-bottom: 1px solid #dae2e6;
+    z-index: 5;
 }
 
 .timeline-row .cell {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #e3e8ec;
+    color: #546877;
+}
+
+.top-left-corner-cell {
+    display: flex;
+    position: relative;
     align-items: center;
     justify-content: center;
     border-right: 1px solid #e3e8ec;
@@ -110,7 +121,13 @@ body {
 
 .resource-cell {
     display: flex;
+    position: relative;
     align-items: center;
+    background: white;
+    border-bottom: 1px solid #f0f2f4;
+    box-sizing: border-box;
+    background: white;
+    border-right: 1px solid #e3e8ec;
 }
 
 .resource-name {

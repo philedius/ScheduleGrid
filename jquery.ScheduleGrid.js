@@ -1,22 +1,21 @@
 (function ($) {
-    
     var resourceCellWidth = 180;
     var numColumns;
     var eventWidth;
     var eventHeight;
     var cellW;
     var cellH;
-    var numRows = 60;
-    var firstNames = ['Jeff', 'Alex', 'Vinny', 'Ryan', 'Abby', 'Drew', 'Brad', 'Patrick', 'Dan', 'Jason', 'Jan', 'Austin', 'Ben', 'Dave', 'Brett'];
-    var lastNames = ['Gerstmann', 'Navarro', 'Caravella', 'Davis', 'Russell', 'Scanlon', 'Shoemaker', 'Klepek', 'Ryckert', 'Oestreicher', 'Ochoa', 'Walker', 'Pack', 'Snider'];
+    var numRows = 30;
+    var firstNames = ['Jeff', 'Alex', 'Vinny', 'Ryan', 'Abby', 'Drew', 'Brad', 'Patrick', 'Dan', 'Jason', 'Jan', 'Austin', 'Ben', 'Dave', 'Brett', 'Danny', 'Matthew'];
+    var lastNames = ['Gerstmann', 'Navarro', 'Caravella', 'Davis', 'Russell', 'Scanlon', 'Shoemaker', 'Klepek', 'Ryckert', 'Oestreicher', 'Ochoa', 'Walker', 'Pack', 'Snider', 'Bakalar', 'O\'Dwyer', 'Rorie'];
     
     $.fn.ScheduleGrid = function (options) {
         $grid = this;
         var settings = $.extend({
             cell: {
                 size: {
-                    width: 36,
-                    height: 36
+                    width: 46,
+                    height: 40
                 },
             },
             event: {
@@ -24,16 +23,19 @@
             },
             resizable: true,
             draggable: true,
-            numMonthsToRender: 3
+            numMonthsToRender: 3,
+            palette: [
+                'rgb(37, 120, 220)',
+                'rgb(212, 55, 55)',
+                'rgb(243, 200, 0)',
+                'rgb(239, 109, 0)',
+                'rgb(25, 170, 72)'
+            ],
         }, options);
         
-        var colors = {
-            'blue': 'rgb(37, 120, 220)',
-            'red': 'rgb(232, 45, 45)',
-            'yellow': 'rgb(243, 200, 0)',
-            'orange': 'rgb(239, 109, 0)',
-            'green': 'rgb(25, 170, 72)'
-        };
+
+        console.log(settings.palette);
+
         settings.numTimelineRows = $('.timeline-row').length;
         var scrollbarWidth = 17;
         cellW = settings.cell.size.width;
@@ -51,14 +53,15 @@
             var startingY = $(this).data('y');
             var startingX = $(this).data('x');
             var span = $(this).data('span');
-            var color = $(this).data('color');
             $(this).css({
                 'top': (startingY * cellH) + 'px',
                 'left': (startingX * cellW) + 'px',
                 'width': (span * cellW) + 'px',
             });
+            
             $(this).find('.event-text').css({
-                'background': colors[color],
+                'background': settings.palette[startingY % settings.palette.length],
+                'border-color': chroma(settings.palette[startingY % settings.palette.length]).darken(.5)
             });
             if (settings.resizable) makeResizable(settings, $(this));
             if (settings.draggable) makeDraggable(settings, $(this));
@@ -69,6 +72,7 @@
             if ($(this).hasClass('resource-cell')) return;
             var x = $(this).data('x');
             var y = $(this).data('y');
+            console.log('resource cell', $('.timeline-row .cell[data-x=' + x + ']').data('month'));
             console.log('Double clicked', y, x);
         });
 
@@ -77,11 +81,9 @@
                 'top': $(this).scrollTop()
             });
 
-            if ($(this).scrollTop() > 0) {
-                $('.timeline-row:last').css('box-shadow', '0 1px 5px rgba(0, 0, 0, .06)');
-            } else {
-                $('.timeline-row:last').css('box-shadow', 'none');
-            }
+            $('.resource-cell').css({
+                'left': $(this).scrollLeft()
+            });
         });
 
         return this;
@@ -104,13 +106,15 @@
 
     function setupTimelineHeaders(settings) {
         var daysHTML = '';
+        var x = 0;
         for (var i = 0; i < settings.numMonthsToRender; i++) {
             var days = dayjs().add(i, 'month').daysInMonth();
             var monthWidth = days * cellW;
             $('#months').append('<div style="min-width: ' + monthWidth + 'px !important; width: ' + monthWidth + 'px" class="cell">' + dayjs().add(i, 'month').format('MMMM') + '</div>')
             for (var j = 0; j < days; j++) {
                 var day = j + 1;
-                daysHTML += '<div class="cell">' + day + '</div>';
+                daysHTML += '<div class="cell" data-x="' + x  + '" data-month="' + dayjs().add(i, 'month').format('MMMM') + '">' + day + '</div>';
+                x += 1;
             }
         }
         $('#days').append(daysHTML);
@@ -122,11 +126,17 @@
             grid: [cellW, cellH],
             handles: 'e',
             stop: function (event, ui) {
+                $target = $(ui.element);
                 var spaces = (ui.size.width - ui.originalSize.width) / cellW;
-                ui.element.attr('data-span', parseInt(ui.element.attr('data-span')) + spaces);
-                var x = parseInt($(ui.element).attr('data-x'));
-                var y = parseInt($(ui.element).attr('data-y'));
-                $(ui.element).find('.event-text').text($('.row[data-row="' + y + '"] .resource-cell').text() + ' ' + (x + 1) + '. - ' + (x + 1 + parseInt($(ui.element).attr('data-span')) - 1) + '. Juli');
+                ui.element.attr('data-span', parseInt($target.attr('data-span')) + spaces);
+                var x = parseInt($target.attr('data-x'));
+                var y = parseInt($target.attr('data-y'));
+                var name = $('.row[data-row="' + y + '"] .resource-cell').text();
+                var startDay = $('.timeline-row .cell[data-x=' + x + ']').text();
+                var endDay = $('.timeline-row .cell[data-x=' + (x + parseInt($(event.target).attr('data-span')) - 1) + ']').text();
+                var startMonth = $('.timeline-row .cell[data-x=' + x + ']').data('month');
+                var endMonth = $('.timeline-row .cell[data-x=' + (x + parseInt($(event.target).attr('data-span')) - 1) + ']').data('month');
+                $target.find('.event-text').text(name + ' ' + startDay + '. ' + startMonth + ' - ' + endDay + '. ' +  endMonth);
                 makeDraggable(settings, element);
             }
         });
@@ -144,14 +154,21 @@
             grid: [cellW, cellH],
             containment: boundingBox,
             stop: function (event, ui) {
-                var spaces = $(event.target).width() / cellW;
-                var posTop = parseInt($(event.target).css('top').replace('px', ''));
-                var posLeft = parseInt($(event.target).css('left').replace('px', ''));
-                var newY = posTop / cellH;
-                var newX = posLeft / cellW;
-                $(event.target).attr('data-y', newY);
-                $(event.target).attr('data-x', newX);
-                $(event.target).find('.event-text').text($('.row[data-row="' + newY + '"] .resource-cell').text() + ' ' + (newX + 1) + '. - ' + (newX + 1 + parseInt($(event.target).attr('data-span')) - 1) + '. Juli');
+                var $target = $(event.target);
+                var spaces = $target.width() / cellW;
+                var posTop = parseInt($target.css('top').replace('px', ''));
+                var posLeft = parseInt($target.css('left').replace('px', ''));
+                var y = posTop / cellH;
+                var x = posLeft / cellW;
+                $target.attr('data-y', y);
+                $target.attr('data-x', x);
+                var name = $('.row[data-row="' + y + '"] .resource-cell').text();
+                var startDay = $('.timeline-row .cell[data-x=' + x + ']').text();
+                var endDay = $('.timeline-row .cell[data-x=' + (x + parseInt($(event.target).attr('data-span')) - 1) + ']').text();
+                var startMonth = $('.timeline-row .cell[data-x=' + x + ']').data('month');
+                var endMonth = $('.timeline-row .cell[data-x=' + (x + parseInt($(event.target).attr('data-span')) - 1) + ']').data('month');
+                $target.find('.event-text').text(name + ' ' + startDay + '. ' + startMonth + ' - ' + endDay + '. ' +  endMonth);
+
             }
         });
         
@@ -184,6 +201,8 @@
     
         $('.resource-cell').css('width', resourceCellWidth);
         $('.resource-cell').css('min-width', resourceCellWidth);
+        $('.top-left-corner-cell').css('width', resourceCellWidth);
+        $('.top-left-corner-cell').css('min-width', resourceCellWidth);
         $('.row').css('height', cellH);
         $('.row').css('width', (cellW * numColumns) + resourceCellWidth);
         $('.events').css('width', $('.events').width() - resourceCellWidth);
