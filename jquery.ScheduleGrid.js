@@ -6,9 +6,11 @@
     var cellW;
     var cellH;
     var numRows = 30;
+    var scrollbarWidth = 17;
     var firstNames = ['Jeff', 'Alex', 'Vinny', 'Ryan', 'Abby', 'Drew', 'Brad', 'Patrick', 'Dan', 'Jason', 'Jan', 'Austin', 'Ben', 'Dave', 'Brett', 'Danny', 'Matthew'];
     var lastNames = ['Gerstmann', 'Navarro', 'Caravella', 'Davis', 'Russell', 'Scanlon', 'Shoemaker', 'Klepek', 'Ryckert', 'Oestreicher', 'Ochoa', 'Walker', 'Pack', 'Snider', 'Bakalar', 'O\'Dwyer', 'Rorie'];
-    
+    var currentMonth = dayjs();
+
     $.fn.ScheduleGrid = function (options) {
         $grid = this;
         var settings = $.extend({
@@ -23,7 +25,6 @@
             },
             resizable: true,
             draggable: true,
-            numMonthsToRender: 3,
             palette: [
                 'rgb(37, 120, 220)',
                 'rgb(212, 55, 55)',
@@ -37,12 +38,11 @@
         console.log(settings.palette);
 
         settings.numTimelineRows = $('.timeline-row').length;
-        var scrollbarWidth = 17;
         cellW = settings.cell.size.width;
         cellH = settings.cell.size.height;
         eventWidth = cellW - settings.event.margin;
         eventHeight = cellH - settings.event.margin;
-        numColumns = calculateNumColumns(settings.numMonthsToRender);
+        numColumns = currentMonth.daysInMonth();
 
         setupTimeline(settings);
 
@@ -77,7 +77,7 @@
         });
 
         $($grid).scroll(function () {
-            $('.timeline-row').css({
+            $('.timeline-rows-container').css({
                 'top': $(this).scrollTop()
             });
 
@@ -104,10 +104,10 @@
         $($grid).append(gridHTML);
     }
 
-    function setupTimelineHeaders(settings) {
+    function setupTimelineHeaders(settings, month) {
         var daysHTML = '';
         var x = 0;
-        for (var i = 0; i < settings.numMonthsToRender; i++) {
+        for (var i = 0; i < numColumns; i++) {
             var days = dayjs().add(i, 'month').daysInMonth();
             var monthWidth = days * cellW;
             $('#months').append('<div style="min-width: ' + monthWidth + 'px !important; width: ' + monthWidth + 'px" class="cell">' + dayjs().add(i, 'month').format('MMMM') + '</div>')
@@ -196,7 +196,6 @@
             'height': eventHeight,
             'min-height': eventHeight,
             'max-height': eventHeight,
-    
         });
     
         $('.resource-cell').css('width', resourceCellWidth);
@@ -205,6 +204,7 @@
         $('.top-left-corner-cell').css('min-width', resourceCellWidth);
         $('.row').css('height', cellH);
         $('.row').css('width', (cellW * numColumns) + resourceCellWidth);
+        $grid.css('width', (cellW * numColumns) + resourceCellWidth + scrollbarWidth);
         $('.events').css('width', $('.events').width() - resourceCellWidth);
         $('.events').css('top', (settings.numTimelineRows * cellH));
         $('.events').css('left', $('.resource-cell').width());
@@ -214,12 +214,14 @@
         return navigator.userAgent.match(/Trident\/7\./);
     }
 
+    // Disable smooth scroll because IE is bad.
     function IEScrollFix(settings) {
         $($grid).on('mousewheel', function (e) {
             e.preventDefault();
             var wheelDelta = e.originalEvent.wheelDelta;
             var currentScrollPosition = $($grid).scrollTop();
-            $($grid).scrollTop(currentScrollPosition - wheelDelta);
+            // wheelDelta is divided by 3 to make the scrolling not as harsh. (feels a bit more pleasant).
+            $($grid).scrollTop(currentScrollPosition - (wheelDelta / 3));
         });
     }
 
@@ -229,6 +231,10 @@
             numDays += dayjs().add(i, 'month').daysInMonth();
         }
         return numDays;
+    }
+
+    function getDates(event) {
+        return false;
     }
 
 })(jQuery);
