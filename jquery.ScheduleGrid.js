@@ -21,7 +21,7 @@
                 },
             },
             event: {
-                margin: 10
+                margin: 0
             },
             resizable: true,
             draggable: true,
@@ -61,7 +61,7 @@
             
             $(this).find('.event-text').css({
                 'background': settings.palette[startingY % settings.palette.length],
-                'border-color': chroma(settings.palette[startingY % settings.palette.length]).darken(.5)
+                // 'border-color': chroma(settings.palette[startingY % settings.palette.length]).darken(.5)
             });
             if (settings.resizable) makeResizable(settings, $(this));
             if (settings.draggable) makeDraggable(settings, $(this));
@@ -110,7 +110,7 @@
         for (var i = 0; i < numColumns; i++) {
             var days = dayjs().add(i, 'month').daysInMonth();
             var monthWidth = days * cellW;
-            $('#months').append('<div style="min-width: ' + monthWidth + 'px !important; width: ' + monthWidth + 'px" class="cell">' + dayjs().add(i, 'month').format('MMMM') + '</div>')
+            $('#months').append('<div style="min-width: ' + monthWidth + 'px !important; width: ' + monthWidth + 'px" class="cell">' + dayjs().add(i, 'month').format('MMM') + '</div>')
             for (var j = 0; j < days; j++) {
                 var day = j + 1;
                 daysHTML += '<div class="cell" data-x="' + x  + '" data-month="' + dayjs().add(i, 'month').format('MMMM') + '">' + day + '</div>';
