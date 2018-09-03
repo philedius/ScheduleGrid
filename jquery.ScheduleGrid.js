@@ -23,6 +23,11 @@
             event: {
                 margin: 0
             },
+            grid: {
+                size: {
+                    width: 1500
+                }
+            },
             resizable: true,
             draggable: true,
             palette: [
@@ -42,7 +47,8 @@
         cellH = settings.cell.size.height;
         eventWidth = cellW - settings.event.margin;
         eventHeight = cellH - settings.event.margin;
-        numColumns = currentMonth.daysInMonth();
+        // numColumns = currentMonth.daysInMonth();
+        numColumns = 100;
 
         setupTimeline(settings);
 
@@ -113,7 +119,7 @@
             $('#months').append('<div style="min-width: ' + monthWidth + 'px !important; width: ' + monthWidth + 'px" class="cell">' + dayjs().add(i, 'month').format('MMM') + '</div>')
             for (var j = 0; j < days; j++) {
                 var day = j + 1;
-                daysHTML += '<div class="cell" data-x="' + x  + '" data-month="' + dayjs().add(i, 'month').format('MMMM') + '">' + day + '</div>';
+                daysHTML += '<div class="cell" data-x="' + x  + '" data-month="' + dayjs().add(i, 'month').format('M') + '">' + day + '</div>';
                 x += 1;
             }
         }
@@ -123,11 +129,22 @@
     function makeResizable(settings, element) {
         if (!element) element = $('.event');
         element.resizable({
-            grid: [cellW, cellH],
+            // grid: [cellW, cellH],
             handles: 'e',
             stop: function (event, ui) {
                 $target = $(ui.element);
-                var spaces = (ui.size.width - ui.originalSize.width) / cellW;
+                var spaces = Math.round(ui.size.width - ui.originalSize.width) / cellW;
+                var newWidth;
+                // Snap width on release
+                if (ui.size.width % cellW >= cellW / 2) {
+                    newWidth = ui.size.width + (cellW - (ui.size.width % cellW));
+                    $target.css('width', newWidth)
+                } else {
+                    newWidth = ui.size.width - (ui.size.width % cellW);
+                    $target.css('width', newWidth)
+                }
+                spaces = Math.round(newWidth - ui.originalSize.width) / cellW;
+                
                 ui.element.attr('data-span', parseInt($target.attr('data-span')) + spaces);
                 var x = parseInt($target.attr('data-x'));
                 var y = parseInt($target.attr('data-y'));
@@ -204,7 +221,8 @@
         $('.top-left-corner-cell').css('min-width', resourceCellWidth);
         $('.row').css('height', cellH);
         $('.row').css('width', (cellW * numColumns) + resourceCellWidth);
-        $grid.css('width', (cellW * numColumns) + resourceCellWidth + scrollbarWidth);
+        // $grid.css('width', (cellW * numColumns) + resourceCellWidth + scrollbarWidth);
+        $grid.css('width', settings.grid.size.width);
         $('.events').css('width', $('.events').width() - resourceCellWidth);
         $('.events').css('top', (settings.numTimelineRows * cellH));
         $('.events').css('left', $('.resource-cell').width());
